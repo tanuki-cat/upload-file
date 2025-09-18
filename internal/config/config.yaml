@@ -1,0 +1,123 @@
+upload:
+  # 上传类型: local, oss, minio
+  type: oss
+  
+  # 本地上传配置
+  local:
+    path: ~/Downloads
+    # 可选：URL 前缀，用于生成访问链接
+    url-prefix: http://localhost:8080/uploads
+  
+  # OSS 配置 (支持多厂商)
+  oss:
+    # OSS 厂商: aliyun, tencent, huawei, aws, qcloud
+    provider: aliyun
+    
+    # 阿里云 OSS 配置
+    aliyun:
+      endpoint: oss-cn-hangzhou.aliyuncs.com
+      access-key-id: your-access-key-id
+      access-key-secret: your-access-key-secret
+      bucket: your-bucket-name
+      # 可选：自定义域名
+      domain: https://your-custom-domain.com
+      # 可选：上传路径前缀
+      path-prefix: uploads/
+      # 可选：是否使用 HTTPS
+      use-ssl: true
+      # 可选：是否使用内网 endpoint
+      use-internal: false
+    
+    # 腾讯云 COS 配置
+    tencent:
+      region: ap-beijing
+      secret-id: your-secret-id
+      secret-key: your-secret-key
+      bucket: your-bucket-name-appid
+      # 可选：自定义域名
+      domain: https://your-custom-domain.com
+      # 可选：上传路径前缀
+      path-prefix: uploads/
+      # 可选：是否使用 HTTPS
+      use-ssl: true
+    
+    # 华为云 OBS 配置
+    huawei:
+      endpoint: obs.cn-north-4.myhuaweicloud.com
+      access-key-id: your-access-key-id
+      secret-access-key: your-secret-access-key
+      bucket: your-bucket-name
+      # 可选：自定义域名
+      domain: https://your-custom-domain.com
+      # 可选：上传路径前缀
+      path-prefix: uploads/
+      # 可选：是否使用 HTTPS
+      use-ssl: true
+      # 可选：区域
+      region: cn-north-4
+    
+    # AWS S3 配置
+    aws:
+      region: us-west-2
+      access-key-id: your-access-key-id
+      secret-access-key: your-secret-access-key
+      bucket: your-bucket-name
+      # 可选：自定义域名
+      domain: https://your-custom-domain.com
+      # 可选：上传路径前缀
+      path-prefix: uploads/
+      # 可选：是否使用 HTTPS
+      use-ssl: true
+      # 可选：自定义 endpoint
+      endpoint: s3.us-west-2.amazonaws.com
+    
+    # 其他兼容 S3 的服务配置
+    qcloud:
+      region: ap-beijing
+      access-key-id: your-access-key-id
+      secret-access-key: your-secret-access-key
+      bucket: your-bucket-name
+      endpoint: cos.ap-beijing.myqcloud.com
+      # 可选：自定义域名
+      domain: https://your-custom-domain.com
+      # 可选：上传路径前缀
+      path-prefix: uploads/
+      # 可选：是否使用 HTTPS
+      use-ssl: true
+  
+  # MinIO 配置
+  minio:
+    endpoint: localhost:9000
+    access-key: minio-access-key
+    secret-key: minio-secret-key
+    bucket: your-bucket-name
+    # 可选：自定义域名
+    domain: https://your-minio-domain.com
+    # 可选：上传路径前缀
+    path-prefix: uploads/
+    # 可选：是否使用 HTTPS
+    use-ssl: false
+    # 可选：区域
+    region: us-east-1
+
+# 通用上传配置
+upload-settings:
+  # 最大文件大小 (MB)
+  max-file-size: 100
+  # 允许的文件类型
+  allowed-extensions:
+    - .jpg
+    - .jpeg
+    - .png
+    - .gif
+    - .pdf
+    - .doc
+    - .docx
+  # 文件名生成策略: original, uuid, timestamp
+  filename-strategy: uuid
+  # 是否保留原始文件名作为前缀
+  keep-original-name: false
+  # 并发上传数量
+  concurrent-uploads: 3
+  # 分片上传阈值 (MB)
+  multipart-threshold: 100
