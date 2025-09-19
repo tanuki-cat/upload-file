@@ -1,6 +1,7 @@
 package router
 
 import (
+	"net/http"
 	"upload-util/internal/config"
 	"upload-util/internal/handler"
 	"upload-util/internal/middleware"
@@ -35,7 +36,7 @@ func SetupRouter(cfg *config.UploadConfig) (*gin.Engine, error) {
 		}
 	}
 	r.GET("/", func(c *gin.Context) {
-		c.Redirect(302, "/api/v1/system/health")
+		c.Redirect(http.StatusFound, "/api/v1/system/health")
 	})
 	return r, nil
 }

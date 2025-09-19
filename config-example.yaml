@@ -20,7 +20,7 @@ upload:
       access-key-secret: your-access-key-secret
       bucket: your-bucket-name
       # 可选：自定义域名
-#      domain: https://your-custom-domain.com
+      domain: https://your-custom-domain.com
       # 可选：上传路径前缀
       path-prefix: uploads/
       # 可选：是否使用 HTTPS
@@ -28,7 +28,7 @@ upload:
       # 可选：是否使用内网 endpoint
       use-internal: false
       #可选：签名url 过期时间
-#      sign-url-expires: 3600
+      sign-url-expires: 3600
     
     # 腾讯云 COS 配置
     tencent:

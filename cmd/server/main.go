@@ -15,15 +15,29 @@ import (
 	"upload-util/internal/router"
 )
 
+var (
+	Version   = "dev"
+	GitCommit = "unknown"
+	BuildTime = "unknown"
+)
+
 func main() {
 	// 命令行参数
 	var (
-		configFile = flag.String("config", "internal/config/config.yaml", "配置文件路径")
+		configFile = flag.String("config", "config-example.yaml", "配置文件路径")
 		port       = flag.String("port", "8080", "服务端口")
 		host       = flag.String("host", "0.0.0.0", "服务地址")
+		version    = flag.Bool("version", false, "显示版本信息")
 	)
 	flag.Parse()
 
+	if *version {
+		fmt.Printf("Upload Util Server\n")
+		fmt.Printf("Version: %s\n", Version)
+		fmt.Printf("Git Commit: %s\n", GitCommit)
+		fmt.Printf("Build Time: %s\n", BuildTime)
+		return
+	}
 	// 加载配置
 	cfg, err := config.LoadConfig(*configFile)
 	if err != nil {
