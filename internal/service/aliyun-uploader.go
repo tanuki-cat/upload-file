@@ -87,5 +87,14 @@ func (u *AliyunUploader) GetURL(ctx context.Context, key string) (string, error)
 	if u.config.Domain != "" {
 		return fmt.Sprintf("%s/%s", strings.TrimRight(u.config.Domain, "/"), key), nil
 	}
-	return buildURL("", u.config.Bucket, u.config.Endpoint, key, u.config.UseSSL), nil
+	//生成签名url
+	expireTime := u.config.SignURLExpire
+	if expireTime <= 0 {
+		expireTime = 3600
+	}
+	signUrl, err := u.bucket.SignURL(key, oss.HTTPGet, 3600)
+	if err != nil {
+		return "", fmt.Errorf("failed to get sign url: %w", err)
+	}
+	return signUrl, nil
 }

@@ -42,6 +42,7 @@ type AliyunOSSConfig struct {
 	PathPrefix      string `yaml:"path-prefix,omitempty"`
 	UseSSL          bool   `yaml:"use-ssl"`
 	UseInternal     bool   `yaml:"use-internal"`
+	SignURLExpire   int64  `yaml:"sign-url-expire,omitempty"`
 }
 
 type TencentCOSConfig struct {
