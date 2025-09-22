@@ -35,29 +35,44 @@ echo ""
 rm -rf "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR"
 
+# 定义一个函数来处理单个平台的构建
+build_for_platform() {
+    local source_dir="$1"
+    local output_name="$2"
+    local platform="$3"
+
+    GOOS=${platform%/*}
+    GOARCH=${platform#*/}
+
+    output_file="${output_name}_${VERSION}_${GOOS}_${GOARCH}"
+    if [ "$GOOS" = "windows" ]; then
+        output_file="${output_file}.exe"
+    fi
+
+    output_path="${OUTPUT_DIR}/${output_file}"
+
+    echo "  📦 ${GOOS}/${GOARCH}..."
+
+    env GOOS=$GOOS GOARCH=$GOARCH CGO_ENABLED=0 go build \
+        -ldflags="$LDFLAGS" \
+        -o "$output_path" \
+        "./$source_dir"
+}
+
+# 并行构建
 for cmd_info in "${COMMANDS[@]}"; do
     IFS=':' read -r source_dir output_name <<< "$cmd_info"
 
     echo "📦 构建 ${output_name}..."
 
+    # 对每个平台的构建任务进行并行化
     for platform in "${PLATFORMS[@]}"; do
-        GOOS=${platform%/*}
-        GOARCH=${platform#*/}
-
-        output_file="${output_name}_${VERSION}_${GOOS}_${GOARCH}"
-        if [ "$GOOS" = "windows" ]; then
-            output_file="${output_file}.exe"
-        fi
-
-        output_path="${OUTPUT_DIR}/${output_file}"
-
-        echo "  📦 ${GOOS}/${GOARCH}..."
-
-        env GOOS=$GOOS GOARCH=$GOARCH CGO_ENABLED=0 go build \
-            -ldflags="$LDFLAGS" \
-            -o "$output_path" \
-            "./$source_dir"
+        build_for_platform "$source_dir" "$output_name" "$platform" &
     done
+
+    # 等待当前命令的所有构建任务完成
+    wait
+
     echo ""
 done
 
