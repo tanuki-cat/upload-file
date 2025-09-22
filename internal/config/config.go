@@ -3,13 +3,21 @@ package config
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
 
 type UploadConfig struct {
-	Upload         UploadProvider `yaml:"upload"`
-	UploadSettings UploadSettings `yaml:"upload-settings"`
+	ServerConfig   ServerAddressConfig `yaml:"server"`
+	Upload         UploadProvider      `yaml:"upload"`
+	UploadSettings UploadSettings      `yaml:"upload-settings"`
+}
+
+type ServerAddressConfig struct {
+	Port int    `yaml:"port,omitempty"`
+	Addr string `yaml:"addr,omitempty"`
 }
 
 type UploadProvider struct {
@@ -108,19 +116,59 @@ type UploadSettings struct {
 	KeepOriginalName  bool     `yaml:"keep-original-name"`
 }
 
+var defaultUploadConfig = UploadConfig{
+	ServerConfig: ServerAddressConfig{
+		Addr: "127.0.0.1",
+		Port: 8080,
+	},
+
+	Upload: UploadProvider{
+		Type: "local",
+		Local: &LocalConfig{
+			Path: "./uploads",
+		},
+	},
+
+	UploadSettings: UploadSettings{
+		MaxFileSize:       100,
+		AllowedExtensions: []string{".jpg", ".jpeg", ".png", ".pdf"},
+		FilenameStrategy:  "uuid",
+		KeepOriginalName:  false,
+	},
+}
+
 func LoadConfig(configPath string) (*UploadConfig, error) {
+	if configPath == "" {
+		fmt.Println("Warning config path is empty, using default config")
+		return &defaultUploadConfig, nil
+	}
+	if strings.HasPrefix(configPath, "~/") {
+		userDir, err := os.UserHomeDir()
+		if err != nil {
+			fmt.Printf("Error getting user home directory, error: %v\n", err)
+			return &defaultUploadConfig, nil
+		}
+		configPath = filepath.Join(userDir, configPath[2:])
+	}
 	fileData, err := os.ReadFile(configPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read config file: %w", err)
+		//return nil, fmt.Errorf("failed to read config file: %w", err)
+		fmt.Printf("Warning failed to read config filed, using default config, error: %v\n", err)
+		return &defaultUploadConfig, nil
 	}
 	var config UploadConfig
 	if err := yaml.Unmarshal(fileData, &config); err != nil {
-		return nil, fmt.Errorf("failed to parse config file: %w", err)
+		//return nil, fmt.Errorf("failed to parse config file: %w", err)
+		fmt.Printf("Warning failed to parse config file, using default config, error: %v\n", err)
+		return &defaultUploadConfig, nil
 	}
 	return &config, nil
 }
 
 func (c *UploadConfig) Validate() error {
+	if c.ServerConfig.Port > 65535 || c.ServerConfig.Port < 1024 {
+		return fmt.Errorf("invalid server port: %d", c.ServerConfig.Port)
+	}
 	switch c.Upload.Type {
 	case "local":
 		if c.Upload.Local == nil {

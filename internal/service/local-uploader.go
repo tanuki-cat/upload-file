@@ -104,5 +104,26 @@ func (u *LocalUploader) GetURL(ctx context.Context, key string) (string, error) 
 	if u.config.URLPrefix != "" {
 		return fmt.Sprintf("%s/%s", strings.TrimRight(u.config.URLPrefix, "/"), key), nil
 	}
-	return fmt.Sprintf("file://%s", key), nil
+	//拼接本地file 访问路径
+	filePath, err := u.GetLocalFilePath(ctx, key)
+	if err != nil {
+		return "", fmt.Errorf("failed to get file path: %w", err)
+	}
+	return fmt.Sprintf("file://%s", filePath), nil
+}
+
+func (u *LocalUploader) GetLocalFilePath(ctx context.Context, key string) (string, error) {
+	var path string
+	if strings.HasPrefix(u.config.Path, "./") || strings.HasPrefix(u.config.Path, "~/") {
+		//homeDir, err := os.UserHomeDir()
+		currentDir, err := os.Getwd()
+		if err != nil {
+			return "", fmt.Errorf("failed to get user home directory: %w", err)
+		}
+		path = filepath.Join(currentDir, u.config.Path[2:])
+	}
+	if !strings.HasSuffix(path, "/") {
+		path += "/"
+	}
+	return filepath.Join(path, key), nil
 }

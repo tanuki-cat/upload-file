@@ -71,13 +71,13 @@ func (u *QCloudUploader) Upload(ctx context.Context, file multipart.File, header
 	}
 
 	// 生成访问 URL
-	url, err := u.GetURL(ctx, objectKey)
+	fileurl, err := u.GetURL(ctx, objectKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get url: %w", err)
 	}
 
 	return &UploadResult{
-		URL:      url,
+		URL:      fileurl,
 		Key:      objectKey,
 		Size:     header.Size,
 		MimeType: getMimeType(filename),

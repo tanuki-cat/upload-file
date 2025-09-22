@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 	"upload-util/internal/config"
@@ -24,9 +25,9 @@ var (
 func main() {
 	// 命令行参数
 	var (
-		configFile = flag.String("config", "config-example.yaml", "配置文件路径")
-		port       = flag.String("port", "8080", "服务端口")
-		host       = flag.String("host", "0.0.0.0", "服务地址")
+		configFile = flag.String("config", "", "配置文件路径")
+		port       = flag.String("port", "", "服务端口")
+		host       = flag.String("host", "", "服务地址")
 		version    = flag.Bool("version", false, "显示版本信息")
 	)
 	flag.Parse()
@@ -55,9 +56,17 @@ func main() {
 		log.Fatalf("初始化路由失败: %v", err)
 	}
 
+	if *host != "" {
+		cfg.ServerConfig.Addr = *host
+	}
+	if *port != "" {
+		num, _ := strconv.Atoi(*port)
+		cfg.ServerConfig.Port = num
+	}
+
 	// 创建 HTTP 服务器
 	srv := &http.Server{
-		Addr:           fmt.Sprintf("%s:%s", *host, *port),
+		Addr:           fmt.Sprintf("%s:%d", cfg.ServerConfig.Addr, cfg.ServerConfig.Port),
 		Handler:        r,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
