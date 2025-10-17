@@ -7,7 +7,7 @@ APP_NAME="upload-util"
 VERSION=${1:-$(date +%Y%m%d%H%M%S)}
 OUTPUT_DIR="./bin"
 GIT_COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-BUILD_TIME=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
+BUILD_TIME=$(date '+%Y-%m-%d %H:%M:%S CST')
 
 LDFLAGS="-s -w -X 'main.Version=${VERSION}' -X 'main.GitCommit=${GIT_COMMIT}' -X 'main.BuildTime=${BUILD_TIME}'"
 
