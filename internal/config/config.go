@@ -210,6 +210,16 @@ func (c *UploadConfig) validateOSS() error {
 			return fmt.Errorf("aws oss config is required when provider is aws")
 		}
 		return c.validateAWSS3()
+	case "qcloud":
+		if oss.QCloud == nil {
+			return fmt.Errorf("qcloud oss config is required when provider is qcloud")
+		}
+		return c.validateQCloudCOS()
+	case "minio":
+		if c.Upload.MinIO == nil {
+			return fmt.Errorf("minio config is required when provider is minio")
+		}
+		return c.validateMinIO()
 	default:
 		return fmt.Errorf("unsupported oss provider: %s", oss.Provider)
 	}
@@ -252,16 +262,16 @@ func (c *UploadConfig) validateTencentCOS() error {
 func (c *UploadConfig) validateHuaweiOSS() error {
 	oss := c.Upload.OSS.Huawei
 	if oss.Endpoint == "" {
-		fmt.Errorf("huawei oss endpoint is required")
+		return fmt.Errorf("huawei oss endpoint is required")
 	}
 	if oss.AccessKeyID == "" {
-		fmt.Errorf("huawei oss access key id is required")
+		return fmt.Errorf("huawei oss access key id is required")
 	}
 	if oss.SecretAccessKey == "" {
-		fmt.Errorf("huawei oss access key secret is required")
+		return fmt.Errorf("huawei oss access key secret is required")
 	}
 	if oss.Bucket == "" {
-		fmt.Errorf("huawei oss bucket is required")
+		return fmt.Errorf("huawei oss bucket is required")
 	}
 	return nil
 }
