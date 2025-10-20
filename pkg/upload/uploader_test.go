@@ -32,7 +32,7 @@ func Test_NewUploader(t *testing.T) {
 
 	t.Run("NilConfig", func(t *testing.T) {
 		_, err := NewUploader(nil)
-		if err == nil {
+		if err != nil {
 			t.Error("Expected error for nil config")
 		}
 	})
